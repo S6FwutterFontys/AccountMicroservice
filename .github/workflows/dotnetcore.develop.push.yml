@@ -1,5 +1,4 @@
 name: .NET Core push on develop branch
-
 on:
   push:
     branches: [develop]
@@ -15,6 +14,10 @@ jobs:
     steps:
       # Checkout Git repository
       - uses: actions/checkout@v2
+      
+      # Decrypts appsettings.json
+      - name: Decrypt the GPG encrypted config files
+        run: gpg --quiet --batch --yes --passphrase ${{ secrets.GPG_PASSPHRASE }}  --output ./EmailMicroservice/appsettings.json --decrypt ./EmailMicroservice/appsettings.json.gpg
 
       # Install the dependencies needed for the project
       - name: Install dependencies
@@ -38,11 +41,18 @@ jobs:
         with:
           name: release-artifact
           path: ./release
+     
       - name: Upload Dockerfile artifact
         uses: actions/upload-artifact@v1
         with:
           name: dockerfile-artifact
           path: ./Dockerfile
+      
+      - name: Upload Kubernetes artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: kubernetes-artifact
+          path: ./kube_development
   
   deliver:
     needs: build
@@ -54,6 +64,7 @@ jobs:
         with:
           name: release-artifact
           path: ./release
+
       - name: Download Dockerfile artifact
         uses: actions/download-artifact@v1
         with:
@@ -70,3 +81,33 @@ jobs:
           docker build -t $CONTAINER_IMAGE -t $CONTAINER_IMAGE_LATEST .
           docker push $CONTAINER_IMAGE
           docker push $CONTAINER_IMAGE_LATEST
+          
+  deploy:
+    needs: deliver
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Download Kubernetes artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: kubernetes-artifact
+          path: ./kube_development
+          
+      - name: Setup Kubectl
+        uses: azure/setup-kubectl@v1
+        
+      - name: Set context via kubeconfig
+        uses: azure/k8s-set-context@v1
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      
+      - name: Deploy to Kubernetes cluster
+        uses: azure/k8s-deploy@v1
+        with:
+          namespace: development
+          manifests: |
+            ./kube_development/autoscaler.yaml
+            ./kube_development/deployment.yaml
+            ./kube_development/service.yaml
+          images: |
+              ${{ secrets.DOCKER_USER }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.sha }}
