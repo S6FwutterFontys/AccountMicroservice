@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account-microservice
+  namespace: development
+  labels:
+    app: account-microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: account-microservice
+  template:
+    metadata:
+      labels:
+        app: account-microservice
+    spec:
+      containers:
+        - name: account-microservice
+          image: joeriberman/account-microservice
+          imagePullPolicy: IfNotPresent
+          ports: 
+            - containerPort: 80  
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
