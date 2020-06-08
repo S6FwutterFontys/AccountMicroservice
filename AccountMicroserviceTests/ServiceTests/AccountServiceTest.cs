@@ -7,6 +7,7 @@ using AccountMicroservice.Models;
 using AccountMicroservice.Repositories;
 using AccountMicroservice.Services;
 using AccountMicroservice.Helpers;
+using MessageBroker;
 using Moq;
 using Xunit;
 
@@ -15,6 +16,7 @@ namespace AccountMicroserviceTests.ServiceTests
     public class AccountServiceTest
     {
         private readonly IAccountService _accountService;
+        private readonly Mock<IMessageQueuePublisher> _messageQueuePublisher;
         private readonly Mock<IAccountRepository> _repository;
         private readonly Mock<IHasher> _hasher;
         private readonly Mock<IJWTTokenGenerator> _jwtGenerator;
@@ -27,7 +29,7 @@ namespace AccountMicroserviceTests.ServiceTests
             _repository = new Mock<IAccountRepository>();
             _regexHelper = new Mock<IRegexHelper>();
             _accountService = new AccountService(_repository.Object, _hasher.Object, _jwtGenerator.Object,
-                _regexHelper.Object);
+                _regexHelper.Object, _messageQueuePublisher.Object);
         }
 
         [Fact]

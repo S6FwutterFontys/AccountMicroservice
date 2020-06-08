@@ -5,22 +5,26 @@ using AccountMicroservice.Exceptions;
 using AccountMicroservice.Helpers;
 using AccountMicroservice.Models;
 using AccountMicroservice.Repositories;
+using MessageBroker;
+using Newtonsoft.Json;
 
 namespace AccountMicroservice.Services
 {
     public class AccountService : IAccountService
     {
         private readonly IAccountRepository _repository;
+        private readonly IMessageQueuePublisher _messageQueuePublisher;
         private readonly IHasher _hasher;
         private readonly IRegexHelper _regexHelper;
         private readonly IJWTTokenGenerator _tokenGenerator;
 
-        public AccountService(IAccountRepository repository, IHasher hasher, IJWTTokenGenerator tokenGenerator, IRegexHelper regexHelper)
+        public AccountService(IAccountRepository repository, IHasher hasher, IJWTTokenGenerator tokenGenerator, IRegexHelper regexHelper, IMessageQueuePublisher messageQueuePublisher)
         {
             _repository = repository;
             _hasher = hasher;
             _tokenGenerator = tokenGenerator;
             _regexHelper = regexHelper;
+            _messageQueuePublisher = messageQueuePublisher;
         }
 
         public async Task<Account> Login(LoginModel loginModel)
@@ -52,16 +56,24 @@ namespace AccountMicroservice.Services
             var salt = _hasher.CreateSalt();
             var hashedPassword = await _hasher.HashPassword(accountModel.Password, salt);
             
-            var newAccount = new Account()
+            var newAccount = await _repository.Create(new Account()
             {
                 Id = Guid.NewGuid(),
                 FullName = accountModel.FullName,
                 Email = accountModel.Email,
                 Password = hashedPassword,
                 Salt = salt
-            };
-            var account = await _repository.Create(newAccount);
-            return account.WithoutPassword();
+            });
+
+            await _messageQueuePublisher.PublishMessageAsync("fwetter-exchange", "EmailMicroserviceQueue", "Register",JsonConvert.SerializeObject(new object[]
+            {
+                newAccount.Id,
+                newAccount.Email,
+                newAccount.FullName
+            }));
+            
+            
+            return newAccount.WithoutPassword();
         }
 
         public async Task<Account> UpdateAccount(Guid userId, UpdateAccountModel updateAccountModel)
