@@ -28,6 +28,7 @@ namespace AccountMicroserviceTests.ServiceTests
             _hasher = new Mock<IHasher>();
             _repository = new Mock<IAccountRepository>();
             _regexHelper = new Mock<IRegexHelper>();
+            _messageQueuePublisher = new Mock<IMessageQueuePublisher>();
             _accountService = new AccountService(_repository.Object, _hasher.Object, _jwtGenerator.Object,
                 _regexHelper.Object, _messageQueuePublisher.Object);
         }
