@@ -3,6 +3,9 @@ name: .NET Core push on master branch
 on:
   push:
     branches: [master]
+    
+env:
+  PROJECT_NAME: AccountMicroservice
 
 jobs:
   build:
@@ -15,6 +18,9 @@ jobs:
     steps:
       # Checkout Git repository
       - uses: actions/checkout@v2
+          with:
+            # Disabling shallow clone is recommended for improving relevancy of reporting
+            fetch-depth: 0
 
       # Install the dependencies needed for the project
       - name: Install dependencies
@@ -27,6 +33,12 @@ jobs:
       # Test the project
       - name: Test
         run: dotnet test
+        
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            SONAR_TOKEN: ${{ secrets.SONARCLOUD_ACCESS_TOKEN }}
       
       # Publish the release build in the /release folder
       - name: Publish
@@ -38,11 +50,13 @@ jobs:
         with:
           name: release-artifact
           path: ./release
+          
       - name: Upload Dockerfile artifact
         uses: actions/upload-artifact@v1
         with:
           name: dockerfile-artifact
           path: ./Dockerfile
+          
   
   deliver:
     needs: build

@@ -17,7 +17,10 @@ jobs:
     steps:
       # Checkout Git repository
       - uses: actions/checkout@v2
-      
+          with:
+            # Disabling shallow clone is recommended for improving relevancy of reporting
+            fetch-depth: 0
+       
       # Decrypts appsettings.json
       - name: Decrypt the GPG encrypted config files
         run: gpg --quiet --batch --yes --passphrase ${{ secrets.GPG_PASSPHRASE }}  --output ./${{ env.PROJECT_NAME }}/appsettings.json --decrypt ./${{ env.PROJECT_NAME }}/appsettings.json.gpg
@@ -56,6 +59,12 @@ jobs:
         with:
           name: kubernetes-artifact
           path: ./kube_development
+          
+        - name: SonarCloud Scan
+          uses: sonarsource/sonarcloud-github-action@master
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            SONAR_TOKEN: ${{ secrets.SONARCLOUD_ACCESS_TOKEN }}
   
   deliver:
     needs: build
