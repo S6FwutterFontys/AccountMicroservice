@@ -14,12 +14,13 @@ jobs:
     # Run the steps in a Docker container on the virtual machine
     container:
       image: mcr.microsoft.com/dotnet/core/sdk:3.1.201-bionic
+      
     steps:
       # Checkout Git repository
       - uses: actions/checkout@v2
-          with:
-            # Disabling shallow clone is recommended for improving relevancy of reporting
-            fetch-depth: 0
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
        
       # Decrypts appsettings.json
       - name: Decrypt the GPG encrypted config files
