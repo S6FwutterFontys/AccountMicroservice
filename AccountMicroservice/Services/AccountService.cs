@@ -59,17 +59,17 @@ namespace AccountMicroservice.Services
             var newAccount = await _repository.Create(new Account()
             {
                 Id = Guid.NewGuid(),
-                FullName = accountModel.FullName,
+                Username = accountModel.Username,
                 Email = accountModel.Email,
                 Password = hashedPassword,
                 Salt = salt
             });
 
-            await _messageQueuePublisher.PublishMessageAsync("fwetter-exchange", "EmailMicroserviceQueue", "Register",JsonConvert.SerializeObject(new object[]
+            await _messageQueuePublisher.PublishMessageAsync("fwutter-exchange", "EmailMicroserviceQueue", "RegisterUser",JsonConvert.SerializeObject(new object[]
             {
                 newAccount.Id,
                 newAccount.Email,
-                newAccount.FullName
+                newAccount.Username
             }));
             
             
