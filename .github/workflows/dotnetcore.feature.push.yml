@@ -4,6 +4,8 @@ on:
   push:
     branches: [feature/*]
 
+    env:
+      PROJECT_NAME: AccountMicroservice
 jobs:
   build:
     # The virtual machine that will be used on GitHub
@@ -28,20 +30,22 @@ jobs:
       - name: Test
         run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
         
-  sonarcloud:
+  sonarscanner:
     runs-on: ubuntu-18.04
     steps:
+      - uses: actions/checkout@v2
+      
       - name: Sonarscanner for dotnet
         uses: Secbyte/dotnet-sonarscanner@v2.3
         with:
           buildCommand: dotnet build .
-          testCommand: dotnet test .
-          projectKey: S65-2-project_EmailMicroservice
-          projectName: EmailMicroservice
-          sonarOrganisation: s65-2-project
+          testCommand: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+          projectKey: S65-2-project_${{ env.PROJECT_NAME }}
+          projectName: ${{ env.PROJECT_NAME }}
+          sonarOrganisation: s6fwutterfontys
           beginArguments: >
               /d:sonar.verbose="true"
-              /d:sonar.cs.opencover.reportsPaths='"/path/to/coverage.xml","/path/to/coverage.2.xml"'
+              /d:sonar.cs.opencover.reportsPaths='"/${{ env.PROJECT_NAME }}Tests/coverage.xml"'
               /d:sonar.coverage.exclusions='"**/*.cs","**/*.md","**/sonar-project.properties"'
         env:
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_ACCESS_TOKEN }}

@@ -67,8 +67,26 @@ jobs:
           name: kubernetes-artifact
           path: ./kube_development
           
-
-  
+  sonarscanner:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Sonarscanner for dotnet
+        uses: Secbyte/dotnet-sonarscanner@v2.3
+        with:
+          buildCommand: dotnet build .
+          testCommand: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+          projectKey: S65-2-project_${{ env.PROJECT_NAME }}
+          projectName: ${{ env.PROJECT_NAME }}
+          sonarOrganisation: s6fwutterfontys
+          beginArguments: >
+              /d:sonar.verbose="true"
+              /d:sonar.cs.opencover.reportsPaths='"/${{ env.PROJECT_NAME }}Tests/coverage.xml"'
+              /d:sonar.coverage.exclusions='"**/*.cs","**/*.md","**/sonar-project.properties"'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   deliver:
     needs: build
     runs-on: ubuntu-18.04
