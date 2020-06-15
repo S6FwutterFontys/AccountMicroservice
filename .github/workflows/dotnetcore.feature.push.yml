@@ -40,7 +40,7 @@ jobs:
         with:
           buildCommand: dotnet build .
           testCommand: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-          projectKey: S65-2-project_${{ env.PROJECT_NAME }}
+          projectKey: S6FwutterFontys_${{ env.PROJECT_NAME }}
           projectName: ${{ env.PROJECT_NAME }}
           sonarOrganisation: s6fwutterfontys
           beginArguments: >

@@ -34,12 +34,6 @@ jobs:
       # Test the project
       - name: Test
         run: dotnet test
-        
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONARCLOUD_ACCESS_TOKEN }}
       
       # Publish the release build in the /release folder
       - name: Publish
@@ -68,7 +62,7 @@ jobs:
         with:
           buildCommand: dotnet build .
           testCommand: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-          projectKey: S65-2-project_${{ env.PROJECT_NAME }}
+          projectKey: S6FwutterFontys_${{ env.PROJECT_NAME }}
           projectName: ${{ env.PROJECT_NAME }}
           sonarOrganisation: s6fwutterfontys
           beginArguments: >
