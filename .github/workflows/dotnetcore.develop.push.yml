@@ -81,6 +81,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_ACCESS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   deliver:
     needs: build
     runs-on: ubuntu-18.04
@@ -133,8 +134,9 @@ jobs:
         with:
           namespace: development
           manifests: |
-            ./kube_development/autoscaler.yaml
-            ./kube_development/deployment.yaml
+            ./kube_development/deployment.yaml          
+            ./kube_development/ingress.yaml
             ./kube_development/service.yaml
+            ./kube_development/autoscaler.yaml
           images: |
               ${{ secrets.DOCKER_USER }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.sha }}
