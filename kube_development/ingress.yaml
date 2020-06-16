@@ -6,13 +6,13 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     kubernetes.io/ingress.class: "nginx"
-    cert-manager.io/cluster-issuer: "letsencrypt-develop"
+    cert-manager.io/cluster-issuer: "letsencrypt-development"
     nginx.ingress.kubernetes.io/ssl-passthrough: "false"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   rules:
-    - host: user.develop.dwetter.nl
+    - host: account.dev.joeriberman.nl
       http:
         paths:
           - backend:

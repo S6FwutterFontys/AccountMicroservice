@@ -121,16 +121,16 @@ jobs:
           path: ./kube_development
           
       - name: Setup Kubectl
-        uses: azure/setup-kubectl@v1
+        uses: Azure/setup-kubectl@v1
         
       - name: Set context via kubeconfig
-        uses: azure/k8s-set-context@v1
+        uses: Azure/k8s-set-context@v1
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
       
       - name: Deploy to Kubernetes cluster
-        uses: azure/k8s-deploy@v1
+        uses: Azure/k8s-deploy@v1
         with:
           namespace: development
           manifests: |
