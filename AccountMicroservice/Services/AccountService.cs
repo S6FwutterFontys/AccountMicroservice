@@ -66,14 +66,14 @@ namespace AccountMicroservice.Services
                 Salt = salt
             });
 
-            await _messageQueuePublisher.PublishMessageAsync("fwutter-exchange", "EmailMicroserviceQueue", "RegisterUser",JsonConvert.SerializeObject(new object[]
-            {
-                newAccount.Id,
-                newAccount.Email,
-                newAccount.Username
-            }));
-            
-            
+            await _messageQueuePublisher.PublishMessageAsync("fwutter-exchange", "EmailMicroserviceQueue", "RegisterUser",
+                JsonConvert.SerializeObject(new object[]
+                {
+                    newAccount.Id,
+                    newAccount.Email,
+                    newAccount.Username
+                }));
+
             return newAccount.WithoutPassword();
         }
 
