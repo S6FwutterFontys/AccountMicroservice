@@ -14,6 +14,7 @@ namespace AccountMicroservice.Services
     {
         private readonly IAccountRepository _repository;
         private readonly IMessageQueuePublisher _messageQueuePublisher;
+        
         private readonly IHasher _hasher;
         private readonly IRegexHelper _regexHelper;
         private readonly IJWTTokenGenerator _tokenGenerator;

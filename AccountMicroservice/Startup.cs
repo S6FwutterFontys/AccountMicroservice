@@ -4,6 +4,8 @@ using AccountMicroservice.Helpers;
 // using AccountMicroservice.Messaging;
 using AccountMicroservice.Repositories;
 using AccountMicroservice.Services;
+using AccountService.Helpers;
+using MessageBroker;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -60,9 +62,11 @@ namespace AccountMicroservice
             
             services.AddTransient<IHasher, Hasher>();
 
+            services.Configure<MessageQueueSettings>(Configuration.GetSection("MessageQueueSettings"));
+
+            services.AddMessagePublisher(Configuration["MessageQueueSettings:Uri"]);
             
-            
-            services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<IAccountService, Services.AccountService>();
             
             services.AddTransient<IAccountRepository, AccountRepository>();
             
