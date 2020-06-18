@@ -4,8 +4,9 @@ on:
   push:
     branches: [feature/*]
 
-    env:
-      PROJECT_NAME: AccountMicroservice
+env:
+  PROJECT_NAME: AccountMicroservice
+
 jobs:
   build:
     # The virtual machine that will be used on GitHub
@@ -45,7 +46,7 @@ jobs:
           sonarOrganisation: s6fwutterfontys
           beginArguments: >
               /d:sonar.verbose="true"
-              /d:sonar.cs.opencover.reportsPaths='"/${{ env.PROJECT_NAME }}Tests/coverage.xml"'
+              /d:sonar.cs.opencover.reportsPaths='"./${{ env.PROJECT_NAME }}Tests/coverage.xml"'
               /d:sonar.coverage.exclusions='"**/*.cs","**/*.md","**/sonar-project.properties"'
         env:
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_ACCESS_TOKEN }}

@@ -5,6 +5,7 @@ using AccountMicroservice.Models;
 using AccountMicroservice.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sentry;
 
 namespace AccountMicroservice.Controllers
 {
